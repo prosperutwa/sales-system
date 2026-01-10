@@ -16,6 +16,10 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.6/css/dataTables.bootstrap5.css">
     
     <link rel="icon" type="image/x-icon" href="{{ asset('assets/img/logo/logo_biovet.png') }}">
+    <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+
 </head>
 <body>
     <main class="main-content">
@@ -56,6 +60,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="{{ asset('assets/js/datatable.js') }}"></script>
+<script src="{{ asset('assets/js/login_form_validation.js') }}"></script>
 @if(session('error'))
 <script>
     document.addEventListener("DOMContentLoaded", function () {

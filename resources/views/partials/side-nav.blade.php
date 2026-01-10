@@ -72,7 +72,7 @@
             <a class="nav-link nav-link-custom" href="{{ route('products') }}" data-page="products">
                 <i class="fas fa-shopping-bag me-2"></i> Products
             </a>
-            <a class="nav-link nav-link-custom" href="" data-page="customers">
+            <a class="nav-link nav-link-custom" href="{{ route('customers') }}" data-page="customers">
                 <i class="fas fa-users me-2"></i> Customers
             </a>
             <a class="nav-link nav-link-custom" href="" data-page="invoices">
@@ -103,10 +103,10 @@
             <a class="list-group-item list-group-item-action border-0 py-3 px-4 active" href="{{ route('admin.dashboard') }}" data-page="dashboard">
                 <i class="fas fa-tachometer-alt me-3"></i> Dashboard
             </a>
-            <a class="list-group-item list-group-item-action border-0 py-3 px-4" href="" data-page="products">
+            <a class="list-group-item list-group-item-action border-0 py-3 px-4" href="{{ route('products') }}" data-page="products">
                 <i class="fas fa-shopping-bag me-3"></i> Products
             </a>
-            <a class="list-group-item list-group-item-action border-0 py-3 px-4" href="" data-page="customers">
+            <a class="list-group-item list-group-item-action border-0 py-3 px-4" href="{{ route('customers') }}" data-page="customers">
                 <i class="fas fa-users me-3"></i> Customers
             </a>
             <a class="list-group-item list-group-item-action border-0 py-3 px-4" href="" data-page="invoices">

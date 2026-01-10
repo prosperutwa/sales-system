@@ -146,5 +146,11 @@ class ProductsController extends Controller
         return redirect()->back()->with('success', 'Stock quantity added successfully.');
     }
 
+    public function getProductsJson()
+    {
+        $products = BiovetTechProduct::where('remain_quantity', '>', 0)->get();
+
+        return response()->json($products);
+    }
 
 }
