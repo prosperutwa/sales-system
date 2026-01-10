@@ -133,7 +133,7 @@
 <div class="invoice-container">
 
     <div class="header-image">
-        <img src="{{ public_path('assets/img/header/header.png') }}">
+        <img src="{{ asset('assets/img/header/header.png') }}">
     </div>
 
     <div class="invoice-header">
@@ -243,8 +243,51 @@
 
 </div>
 
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+<script>
+async function generatePDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('p', 'mm', 'a4');
+    
+    const element = document.querySelector('.invoice-container');
+    
+    const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff'
+    });
+    
+    const imgData = canvas.toDataURL('image/jpeg', 1.0);
+    
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    
+    const imgWidth = pageWidth - 20; 
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    
+    doc.addImage(imgData, 'JPEG', 10, 10, imgWidth, imgHeight);
+    
+    doc.save(`invoice_{{ str_pad($invoice->auto_id, 4, '0', STR_PAD_LEFT) }}.pdf`);
+
+    setTimeout(()=>{
+        window.history.back();
+    }, 100);
+}
+</script>
+
+
+@if($action == "print")
 <script>
     window.print();
 </script>
+@else
+<script>
+    generatePDF()
+</script>
+@endif
 
 @stop

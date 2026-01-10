@@ -166,7 +166,9 @@ class InvoicesController extends Controller
     ->errorCorrection('H')
     ->generate($invoiceNo);
 
-    return view('templates.admin.invoices.print', compact('invoice', 'company','qrCode'));
+    $action = "print";
+
+    return view('templates.admin.invoices.print', compact('invoice', 'company','qrCode', 'action'));
 }
 
 public function download($invoiceId)
@@ -181,10 +183,9 @@ public function download($invoiceId)
     ->errorCorrection('H')
     ->generate($invoiceNo);
 
-    $pdf = Pdf::loadView('templates.admin.invoices.print', compact('invoice', 'company','qrCode'))
-    ->setPaper('A4', 'portrait');
+    $action = "download";
 
-    return $pdf->download('invoice_'.str_pad($invoice->auto_id, 4, '0', STR_PAD_LEFT).'.pdf');
+    return view('templates.admin.invoices.print', compact('invoice', 'company','qrCode', 'action'));
 }
 
 }
