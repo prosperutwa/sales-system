@@ -2,7 +2,7 @@
 @include('partials.side-nav')
 
 @section('content')
-<div class="container my-4" id="container-main">
+<div class="container w-75 my-4" id="container-main">
 
     <div class="card border-0 shadow-sm rounded">
         <div class="card-header border-top border-primary border-0 bg-white d-flex justify-content-between align-items-center">
