@@ -10,7 +10,7 @@
     'products': 'Products',
     'customers': 'Customers',
     'invoices': 'Invoices',
-    'users': 'Users'
+    'users': 'Users',
     'profile': 'Profile'
   };
 
