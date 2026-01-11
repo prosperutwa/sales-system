@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\LoginController;
 
 Route::get('/', [App\Http\Controllers\Auth\LoginController::class, 'loginPage'])->name('login.page');
 Route::post('/login-auth', [App\Http\Controllers\Auth\LoginController::class, 'loginAuth'])->name('login.auth');
+Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 
 
 Route::middleware([AuthBiovetUser::class])->group(function () {
@@ -34,14 +35,26 @@ Route::middleware([AuthBiovetUser::class])->group(function () {
     Route::get('/admin/products/json', function () {
         return \App\Models\Systems\BiovetTechProduct::where('remain_quantity', '>', 0)->get();
     });
-
-   // Invoice actions
     Route::get('admin/invoices/view/{id}', [App\Http\Controllers\Admin\InvoicesController::class, 'view'])->name('invoices.view');
     Route::get('admin/invoices/download/{id}', [App\Http\Controllers\Admin\InvoicesController::class, 'download'])->name('invoices.download');
     Route::get('admin/invoices/print/{id}', [App\Http\Controllers\Admin\InvoicesController::class, 'print'])->name('invoices.print');
     Route::put('/admin/invoices/cancel/{invoice}', [App\Http\Controllers\Admin\InvoicesController::class, 'cancel'])->name('invoices.canceled');
     Route::post('/admin/invoices/pay', [App\Http\Controllers\Admin\InvoicesController::class, 'pay'])->name('invoices.pay');
 
+
+    //users
+    Route::get('admin/users', [App\Http\Controllers\Admin\UsersController::class, 'index'])->name('users.index');
+    Route::post('users', [App\Http\Controllers\Admin\UsersController::class, 'store'])->name('users.store');
+    Route::put('users/{id}', [App\Http\Controllers\Admin\UsersController::class, 'update'])->name('users.update');
+    Route::get('users/toggle/{id}', [App\Http\Controllers\Admin\UsersController::class, 'toggleStatus'])->name('users.toggle');
+    Route::post('users/change-password', [App\Http\Controllers\Admin\UsersController::class, 'changePassword'])->name('users.changePassword');
+    Route::delete('users/{id}', [App\Http\Controllers\Admin\UsersController::class, 'destroy'])->name('users.destroy');
+
+
+
+    Route::get('admin/profile', [App\Http\Controllers\Admin\ProfileController::class, 'index'])->name('profile.index');
+    Route::post('/profile/update', [App\Http\Controllers\Admin\ProfileController::class, 'updateProfile'])->name('profile.update');
+    Route::post('/profile/change-password', [App\Http\Controllers\Admin\ProfileController::class, 'changePassword'])->name('profile.change-password');
 
 
 

@@ -2,9 +2,10 @@
 
 namespace App\Models\Systems;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Auth\BiovetTechAuth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class BiovetTechUser extends Model
 {
@@ -21,4 +22,22 @@ class BiovetTechUser extends Model
         'status',
         'role',
     ];
+
+
+    public function auth()
+    {
+        return $this->hasOne(
+            BiovetTechAuth::class,
+            'user_id',
+            'auto_id'   
+        );
+    }
+
+    /**
+     * Accessor: Full Name
+     */
+    public function getFullNameAttribute()
+    {
+        return trim($this->first_name . ' ' . $this->last_name);
+    }
 }

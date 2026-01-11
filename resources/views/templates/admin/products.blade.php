@@ -8,7 +8,7 @@
             <div class="card-header border-top border-primary border-0 bg-white d-flex justify-content-between align-items-center">
                 <h6 class="mb-0">Products</h6>
 
-                <button class="btn btn-sm btn-primary-custom btn-custom"
+                <button class="btn btn-sm btn-primary-custom"
                 type="button"
                 data-bs-toggle="collapse"
                 data-bs-target="#addProductCollapse"
