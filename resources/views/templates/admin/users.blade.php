@@ -34,64 +34,66 @@
             </div>
 
             <div class="card-body">
-                <table class="table table-bordered table-hover" id="tableList">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Name</th>
-                            <th>Username</th>
-                            <th>Role</th>
-                            <th>Status</th>
-                            <th width="160">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($users as $key => $user)
-                        <tr>
-                            <td>{{ $key+1 }}</td>
-                            <td>{{ $user->full_name }}</td>
-                            <td>{{ $user->auth->username }}</td>
-                            <td>{{ ucfirst($user->role) }}</td>
-                            <td>
-                                <span class="badge {{ $user->status=='active'?'bg-success':'bg-secondary' }}">
-                                    {{ $user->status }}
-                                </span>
-                            </td>
-                            <td>
-                               @if($currentAuth->user_id !== $user->auto_id)
-                               <a href="{{ route('users.toggle', $user->auto_id) }}"
-                                   class="btn btn-sm {{ $user->status === 'active' ? 'btn-success' : 'btn-secondary' }}"
-                                   title="{{ $user->status === 'active' ? 'Deactivate User' : 'Activate User' }}">
+                <div class="table-responsive">                    
+                    <table class="table table-bordered table-hover" id="tableList">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Username</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th width="160">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($users as $key => $user)
+                            <tr>
+                                <td>{{ $key+1 }}</td>
+                                <td>{{ $user->full_name }}</td>
+                                <td>{{ $user->auth->username }}</td>
+                                <td>{{ ucfirst($user->role) }}</td>
+                                <td>
+                                    <span class="badge {{ $user->status=='active'?'bg-success':'bg-secondary' }}">
+                                        {{ $user->status }}
+                                    </span>
+                                </td>
+                                <td>
+                                 @if($currentAuth->user_id !== $user->auto_id)
+                                 <a href="{{ route('users.toggle', $user->auto_id) }}"
+                                     class="btn btn-sm {{ $user->status === 'active' ? 'btn-success' : 'btn-secondary' }}"
+                                     title="{{ $user->status === 'active' ? 'Deactivate User' : 'Activate User' }}">
 
-                                   <i class="fas fa-toggle-{{ $user->status === 'active' ? 'on' : 'off' }}"></i>
-                               </a>
-
-
-                               <button class="btn btn-sm btn-info"
-                               onclick="openPasswordModal({{ $user->auth->auto_id }})">
-                               <i class="fas fa-key"></i>
-                           </button>
+                                     <i class="fas fa-toggle-{{ $user->status === 'active' ? 'on' : 'off' }}"></i>
+                                 </a>
 
 
-                           <form action="{{ route('users.destroy', $user->auto_id) }}" method="POST" class="d-inline deleteUserForm">
-                            @csrf
-                            @method('DELETE')
-                            <button type="button" class="btn btn-sm btn-danger deleteUserBtn">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </form>
-                        @else
-                        <a href="{{ route('profile.index') }}" class="btn btn-sm btn-primary">
-                            Go to profile
-                        </a>
-                        @endif
+                                 <button class="btn btn-sm btn-info"
+                                 onclick="openPasswordModal({{ $user->auth->auto_id }})">
+                                 <i class="fas fa-key"></i>
+                             </button>
 
 
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+                             <form action="{{ route('users.destroy', $user->auto_id) }}" method="POST" class="d-inline deleteUserForm">
+                                @csrf
+                                @method('DELETE')
+                                <button type="button" class="btn btn-sm btn-danger deleteUserBtn">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                            @else
+                            <a href="{{ route('profile.index') }}" class="btn btn-sm btn-primary">
+                                Go to profile
+                            </a>
+                            @endif
+
+
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 </div>
