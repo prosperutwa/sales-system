@@ -82,7 +82,7 @@
                             <td>{{ $customer->full_name }}</td>
                             <td>{{ $customer->phone }}</td>
                             <td>{{ $customer->company_name ?? 'N/A'}}</td>
-                            <td>{{ $customer->email }}</td>
+                            <td>{{ $customer->email ?? 'N/A' }}</td>
                             <td>{{ $customer->tin_number ?? 'N/A' }}</td>
                             <td class="text-nowrap">
                                 <button type="button"

@@ -53,12 +53,12 @@
                                 <td>{{ $user->full_name }}</td>
                                 <td>{{ $user->auth->username }}</td>
                                 <td>{{ ucfirst($user->role) }}</td>
-                                <td>
+                                <td >
                                     <span class="badge {{ $user->status=='active'?'bg-success':'bg-secondary' }}">
                                         {{ $user->status }}
                                     </span>
                                 </td>
-                                <td>
+                                <td class="text-nowrap">
                                  @if($currentAuth->user_id !== $user->auto_id)
                                  <a href="{{ route('users.toggle', $user->auto_id) }}"
                                      class="btn btn-sm {{ $user->status === 'active' ? 'btn-success' : 'btn-secondary' }}"
