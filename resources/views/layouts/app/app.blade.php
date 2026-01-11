@@ -44,9 +44,9 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                     Cancel
                 </button>
-                <button type="button" class="btn btn-danger" id="confirmLogout">
+                <a  href="{{ route('logout') }}" type="button" class="btn btn-danger" id="confirmLogout">
                     Yes, Logout
-                </button>
+                </a>
             </div>
         </div>
     </div>
