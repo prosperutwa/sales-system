@@ -28,8 +28,10 @@
                     <p>
                         {{ $invoice->customer->full_name ?? '-' }} <br>
                         {{ $invoice->customer->company_name ?? '' }} <br>
-                        Phone: {{ $invoice->customer->phone ?? '-' }} <br>
-                        Email: {{ $invoice->customer->email ?? '-' }}
+                        <b>Phone</b>: {{ $invoice->customer->phone ?? '-' }} <br>
+                        <b>Email</b>: {{ $invoice->customer->email ?? '-' }}<br>
+                        <b>Tin Number</b>: {{ $invoice->customer->tin_number ?? '-' }}<br>
+                        <b>Vat Number</b>: {{ $invoice->customer->vat_number ?? '-' }}
                     </p>
                     <p><strong>Date:</strong> {{ $invoice->created_at->format('d M Y') }}</p>
                     <p><strong>Status:</strong> 
@@ -114,7 +116,7 @@
                         <tr>
                             <td>{{ $key + 1 }}</td>
                             <td>{{ ucfirst($payment->payment_method) }}</td>
-                            <td>{{ $payment->reference_no ?? '-' }}</td>
+                            <td>{{ $payment->reference_number ?? '-' }}</td>
                             <td>{{ number_format($payment->amount_paid, 2) }}</td>
                             <td>{{ $payment->created_at->format('d M Y H:i') }}</td>
                         </tr>

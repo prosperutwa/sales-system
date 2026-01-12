@@ -150,6 +150,8 @@
             <p>{{ $invoice->customer->company_name ?? '' }}</p>
             <p>Phone: {{ $invoice->customer->phone ?? '-' }}</p>
             <p>Email: {{ $invoice->customer->email ?? '-' }}</p>
+            <p>Tin Number: {{ $invoice->customer->tin_number ?? '-' }}</p>
+            <p>Vat Number: {{ $invoice->customer->vat_number ?? '-' }}</p>
             <p><strong>Date:</strong> {{ $invoice->created_at->format('d M Y') }}</p>
 
             <span class="status {{ $invoice->status }}">
@@ -224,7 +226,7 @@
                     <tr>
                         <td>{{ $key + 1 }}</td>
                         <td>{{ ucfirst($payment->payment_method) }}</td>
-                        <td>{{ $payment->reference_no ?? '-' }}</td>
+                        <td>{{ $payment->reference_number ?? '-' }}</td>
                         <td class="text-right">{{ number_format($payment->amount_paid, 2) }}</td>
                         <td>{{ $payment->created_at->format('d M Y H:i') }}</td>
                     </tr>

@@ -141,7 +141,7 @@ class InvoicesController extends Controller
             BiovetTechPayment::create([
                 'invoice_id'     => $invoice->auto_id,
                 'payment_method' => $request->method,
-                'reference_no'   => $request->reference_no,
+                'reference_number'   => $request->reference_no,
                 'payment_date'   => now(),
                 'amount_paid'         => $request->amount,
             ]);

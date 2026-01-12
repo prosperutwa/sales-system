@@ -5,7 +5,31 @@
 
 <div class="container my-4">
 
-    <h4 class="mb-4">Dashboard</h4>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="mb-0">Dashboard</h4>
+
+        <form method="GET" action="{{ route('admin.dashboard') }}" class="d-flex gap-2 align-items-center">
+
+            <select name="filter" class="form-select form-select-sm">
+                <option value="all" {{ request('filter')=='all' ? 'selected' : '' }}>All</option>
+                <option value="today" {{ request('filter')=='today' ? 'selected' : '' }}>Today</option>
+                <option value="week" {{ request('filter')=='week' ? 'selected' : '' }}>This Week</option>
+                <option value="month" {{ request('filter')=='month' ? 'selected' : '' }}>This Month</option>
+                <option value="year" {{ request('filter')=='year' ? 'selected' : '' }}>This Year</option>
+            </select>
+
+            <input type="date" name="from" value="{{ request('from') }}"
+            class="form-control form-control-sm">
+
+            <input type="date" name="to" value="{{ request('to') }}"
+            class="form-control form-control-sm">
+
+            <button class="btn btn-sm btn-primary">
+                Filter
+            </button>
+        </form>
+    </div>
+
 
     <div class="row">
 

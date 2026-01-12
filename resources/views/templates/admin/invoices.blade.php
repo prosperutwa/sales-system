@@ -7,9 +7,14 @@
         <div class="card border-0 shadow-sm rounded">
             <div class="card-header border-top border-primary border-0 bg-white d-flex justify-content-between align-items-center">
                 <h6 class="mb-0">Invoices</h6>
-                <button class="btn btn-sm btn-primary-custom" data-bs-toggle="modal" data-bs-target="#createInvoiceModal">
+
+                <div class="float-end">
+                    <button class="btn btn-sm btn-success" onclick="exportTableToExcel('tableList', 'Invoice_list')">Export as Excel</button>
+                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#createInvoiceModal">
                     Create New Invoice
                 </button>
+                </div>
+                
             </div>
 
             <div class="card-body">
@@ -22,9 +27,9 @@
                                         <th>#</th>
                                         <th>Invoice No</th>
                                         <th>Customer</th>
-                                        <th>Total</th>
-                                        <th>Discount</th>
-                                        <th>Total After Discount</th>
+                                        <th>Total(Tsh)</th>
+                                        <th>Discount(Tsh)</th>
+                                        <th>Total After Discount(Tsh)</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -35,9 +40,9 @@
                                         <td>{{ $key + 1 }}</td>
                                         <td>#{{ str_pad($invoice->auto_id, 4, '0', STR_PAD_LEFT) }}</td>
                                         <td>{{ $invoice->customer->full_name ?? '-' }}</td>
-                                        <td>Tsh {{ number_format($invoice->subtotal,2) }}</td>
-                                        <td>Tsh {{ number_format($invoice->discount_amount,2) }}</td>
-                                        <td>Tsh {{ number_format($invoice->total_amount,2) }}</td>
+                                        <td>{{ number_format($invoice->subtotal,2) }}</td>
+                                        <td>{{ number_format($invoice->discount_amount,2) }}</td>
+                                        <td>{{ number_format($invoice->total_amount,2) }}</td>
                                         <td>
                                             @php
                                             $statusClass = match($invoice->status) {
@@ -539,4 +544,21 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 </script>
+<script>
+    function exportTableToExcel(tableID, filename = ''){
+        let table = document.getElementById(tableID);
+        let clone = table.cloneNode(true);
+
+        let headers = clone.querySelectorAll('thead th:last-child');
+        headers.forEach(th => th.remove());
+        let rows = clone.querySelectorAll('tbody tr');
+        rows.forEach(tr => tr.removeChild(tr.lastElementChild));
+
+        let wb = XLSX.utils.table_to_book(clone, {sheet:"Sheet1"});
+        XLSX.writeFile(wb, filename + ".xlsx");
+    }
+
+</script>
+
+<script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 @stop

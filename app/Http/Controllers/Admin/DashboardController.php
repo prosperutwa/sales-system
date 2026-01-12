@@ -14,23 +14,119 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    public function dashboard()
-    {
-        $totalUsers     = BiovetTechUser::count();
-        $totalProducts  = BiovetTechProduct::count();
-        $totalCustomers = BiovetTechCustomer::count();
-        $totalInvoices  = BiovetTechInvoice::count();
-        $totalPayments  = BiovetTechPayment::sum('amount_paid');
+   public function dashboard(Request $request)
+{
+    $filter = $request->filter ?? 'all';
+    $from   = $request->from;
+    $to     = $request->to;
 
-        $totalProfit = BiovetTechInvoiceItem::join('biovet_tech_invoices', 'biovet_tech_invoice_items.invoice_id', '=', 'biovet_tech_invoices.auto_id')
-        ->join('biovet_tech_products', 'biovet_tech_invoice_items.product_id', '=', 'biovet_tech_products.auto_id')
-        ->where('biovet_tech_invoices.status', 'paid') 
-        ->selectRaw('SUM((biovet_tech_invoice_items.unit_price - biovet_tech_products.buying_price) * biovet_tech_invoice_items.quantity) as profit')
+    /*
+    |--------------------------------------------------------------------------
+    | Date Filter Helper
+    |--------------------------------------------------------------------------
+    */
+    $applyDateFilter = function ($query, $column) use ($filter, $from, $to) {
+
+        if ($from && $to) {
+            return $query->whereBetween($column, [$from, $to]);
+        }
+
+        if ($filter === 'today') {
+            return $query->whereDate($column, today());
+        }
+
+        if ($filter === 'week') {
+            return $query->whereBetween($column, [
+                now()->startOfWeek(),
+                now()->endOfWeek()
+            ]);
+        }
+
+        if ($filter === 'month') {
+            return $query->whereMonth($column, now()->month)
+                         ->whereYear($column, now()->year);
+        }
+
+        if ($filter === 'year') {
+            return $query->whereYear($column, now()->year);
+        }
+
+        return $query; // all
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | USERS / PRODUCTS / CUSTOMERS (created_at)
+    |--------------------------------------------------------------------------
+    */
+    $totalUsers = $applyDateFilter(
+        BiovetTechUser::query(),
+        'created_at'
+    )->count();
+
+    $totalProducts = $applyDateFilter(
+        BiovetTechProduct::query(),
+        'created_at'
+    )->count();
+
+    $totalCustomers = $applyDateFilter(
+        BiovetTechCustomer::query(),
+        'created_at'
+    )->count();
+
+    /*
+    |--------------------------------------------------------------------------
+    | INVOICES (invoice_date)
+    |--------------------------------------------------------------------------
+    */
+    $invoiceQuery = $applyDateFilter(
+        BiovetTechInvoice::where('status', 'paid'),
+        'invoice_date'
+    );
+
+    $invoiceIds    = $invoiceQuery->pluck('auto_id');
+    $totalInvoices = $invoiceIds->count();
+
+    /*
+    |--------------------------------------------------------------------------
+    | PAYMENTS
+    |--------------------------------------------------------------------------
+    */
+    $totalPayments = BiovetTechPayment::whereIn('invoice_id', $invoiceIds)
+                        ->sum('amount_paid');
+
+    /*
+    |--------------------------------------------------------------------------
+    | PROFIT
+    |--------------------------------------------------------------------------
+    */
+    $totalProfit = BiovetTechInvoiceItem::join(
+            'biovet_tech_products',
+            'biovet_tech_invoice_items.product_id',
+            '=',
+            'biovet_tech_products.auto_id'
+        )
+        ->whereIn('biovet_tech_invoice_items.invoice_id', $invoiceIds)
+        ->selectRaw(
+            'SUM(
+                (biovet_tech_invoice_items.unit_price - biovet_tech_products.buying_price)
+                * biovet_tech_invoice_items.quantity
+            ) as profit'
+        )
         ->value('profit');
 
-        $topProducts = BiovetTechInvoiceItem::join('biovet_tech_invoices', 'biovet_tech_invoice_items.invoice_id', '=', 'biovet_tech_invoices.auto_id')
-        ->join('biovet_tech_products', 'biovet_tech_invoice_items.product_id', '=', 'biovet_tech_products.auto_id')
-        ->where('biovet_tech_invoices.status', 'paid')
+    /*
+    |--------------------------------------------------------------------------
+    | TOP PRODUCTS
+    |--------------------------------------------------------------------------
+    */
+    $topProducts = BiovetTechInvoiceItem::join(
+            'biovet_tech_products',
+            'biovet_tech_invoice_items.product_id',
+            '=',
+            'biovet_tech_products.auto_id'
+        )
+        ->whereIn('biovet_tech_invoice_items.invoice_id', $invoiceIds)
         ->select(
             'biovet_tech_products.name',
             DB::raw('SUM(biovet_tech_invoice_items.quantity) as total_sold')
@@ -40,21 +136,32 @@ class DashboardController extends Controller
         ->limit(5)
         ->get();
 
-        $monthlySales = BiovetTechInvoice::selectRaw("MONTH(invoice_date) as month, SUM(total_amount) as total")
+    /*
+    |--------------------------------------------------------------------------
+    | MONTHLY SALES (Chart)
+    |--------------------------------------------------------------------------
+    */
+    $monthlySales = BiovetTechInvoice::whereIn('auto_id', $invoiceIds)
+        ->selectRaw('MONTH(invoice_date) as month, SUM(total_amount) as total')
         ->groupBy('month')
-        ->orderBy('month')
-        ->where('status','paid')
         ->pluck('total', 'month');
 
-        return view('templates.admin.dashboard', compact(
-            'totalUsers',
-            'totalProducts',
-            'totalCustomers',
-            'totalInvoices',
-            'totalPayments',
-            'totalProfit',
-            'topProducts',
-            'monthlySales'
-        ));
-    }
+    /*
+    |--------------------------------------------------------------------------
+    | RETURN VIEW
+    |--------------------------------------------------------------------------
+    */
+    return view('templates.admin.dashboard', compact(
+        'totalUsers',
+        'totalProducts',
+        'totalCustomers',
+        'totalInvoices',
+        'totalPayments',
+        'totalProfit',
+        'topProducts',
+        'monthlySales'
+    ));
+}
+
+
 }

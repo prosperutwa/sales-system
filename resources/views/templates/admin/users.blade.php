@@ -6,9 +6,13 @@
         <div class="card border-0 shadow-sm rounded">
             <div class="card-header border-top border-primary border-0 bg-white d-flex justify-content-between align-items-center">
                 <h6 class="mb-0">Invoices</h6>
-                <button class="btn btn-sm btn-primary-custom" data-bs-toggle="collapse" data-bs-target="#addUser">
+                <div class="float-end">
+                    <button class="btn btn-sm btn-success" onclick="exportTableToExcel('tableList', 'users_list')">Export as Excel</button>
+                    <button class="btn btn-sm btn-primary" data-bs-toggle="collapse" data-bs-target="#addUser">
                     Add User
                 </button>
+                </div>
+                
             </div>
             <div class="collapse bg-light p-3" id="addUser">
                 <form method="POST" action="{{ route('users.store') }}">
@@ -103,20 +107,41 @@
         <form method="POST" action="{{ route('users.changePassword') }}" class="modal-content">
             @csrf
             <input type="hidden" name="auth_id" id="authId">
+
             <div class="modal-header">
                 <h6>Change Password</h6>
                 <button class="btn-close" data-bs-dismiss="modal"></button>
             </div>
+
             <div class="modal-body">
-                <input type="password" name="password" class="form-control mb-2" placeholder="New Password" required>
-                <input type="password" name="password_confirmation" class="form-control" placeholder="Confirm Password" required>
+
+                <div class="input-group mb-2">
+                    <input type="password" name="password" id="modal_password"
+                           class="form-control" placeholder="New Password" required>
+                    <span class="input-group-text cursor-pointer"
+                          onclick="togglePassword('modal_password', this)">
+                        <i class="fas fa-eye"></i>
+                    </span>
+                </div>
+
+                <div class="input-group">
+                    <input type="password" name="password_confirmation" id="modal_password_confirm"
+                           class="form-control" placeholder="Confirm Password" required>
+                    <span class="input-group-text cursor-pointer"
+                          onclick="togglePassword('modal_password_confirm', this)">
+                        <i class="fas fa-eye"></i>
+                    </span>
+                </div>
+
             </div>
+
             <div class="modal-footer">
                 <button class="btn btn-success btn-sm">Update</button>
             </div>
         </form>
     </div>
 </div>
+
 
 <script>
     function openPasswordModal(authId){
@@ -149,6 +174,38 @@
         });
     });
 </script>
+<script>
+function togglePassword(inputId, el) {
+    const input = document.getElementById(inputId);
+    const icon = el.querySelector('i');
+
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
+    }
+}
+</script>
+
+<script>
+    function exportTableToExcel(tableID, filename = ''){
+        let table = document.getElementById(tableID);
+        let clone = table.cloneNode(true);
+
+        let headers = clone.querySelectorAll('thead th:last-child');
+        headers.forEach(th => th.remove());
+        let rows = clone.querySelectorAll('tbody tr');
+        rows.forEach(tr => tr.removeChild(tr.lastElementChild));
+
+        let wb = XLSX.utils.table_to_book(clone, {sheet:"Sheet1"});
+        XLSX.writeFile(wb, filename + ".xlsx");
+    }
+
+</script>
+
+<script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 
 @stop
 

@@ -20,6 +20,7 @@ class BiovetTechCustomer extends Model
         'email',
         'address',
         'tin_number',
+        'vat_number',
     ];
 
     /**

@@ -8,10 +8,10 @@
 				<h6 class="mb-0">Profile</h6>
 				<div>
 					<button class="btn btn-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#editProfileModal">
-						 Edit Profile
+						Edit Profile
 					</button>
 					<button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
-						 Change Password
+						Change Password
 					</button>
 				</div>
 			</div>
@@ -151,12 +151,26 @@
 					<div class="modal-body">
 						<div class="mb-3">
 							<label class="form-label">New Password (8-12 characters)</label>
-							<input type="password" class="form-control" name="password" placeholder="Enter new password" required>
+							<div class="input-group">
+								<input type="password" class="form-control" id="new_password" name="password"
+								placeholder="Enter new password" required>
+								<span class="input-group-text cursor-pointer" onclick="togglePassword('new_password', this)">
+									<i class="fas fa-eye"></i>
+								</span>
+							</div>
 						</div>
+
 						<div class="mb-3">
 							<label class="form-label">Confirm Password</label>
-							<input type="password" class="form-control" name="password_confirmation" placeholder="Confirm new password" required>
+							<div class="input-group">
+								<input type="password" class="form-control" id="confirm_password"
+								name="password_confirmation" placeholder="Confirm new password" required>
+								<span class="input-group-text cursor-pointer" onclick="togglePassword('confirm_password', this)">
+									<i class="fas fa-eye"></i>
+								</span>
+							</div>
 						</div>
+
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
@@ -170,6 +184,22 @@
 			</div>
 		</div>
 	</div>
+	<script>
+		function togglePassword(inputId, el) {
+			const input = document.getElementById(inputId);
+			const icon = el.querySelector('i');
+
+			if (input.type === 'password') {
+				input.type = 'text';
+				icon.classList.remove('fa-eye');
+				icon.classList.add('fa-eye-slash');
+			} else {
+				input.type = 'password';
+				icon.classList.remove('fa-eye-slash');
+				icon.classList.add('fa-eye');
+			}
+		}
+	</script>
 
 	@stop
 

@@ -13,6 +13,7 @@ class CustomersController extends Controller
 {
     public function index() {
         $customers = BiovetTechCustomer::all();
+
         return view('templates.admin.customers', compact('customers'));
     }
 
@@ -27,6 +28,7 @@ class CustomersController extends Controller
             'email'        => 'nullable|email|max:100',
             'address'      => 'nullable|string',
             'tin_number'   => 'nullable|string|max:50',
+            'vat_number'   => 'nullable|string|max:50',
         ]);
 
         $exists = BiovetTechCustomer::where('full_name', $validated['full_name'])
@@ -84,6 +86,7 @@ class CustomersController extends Controller
             'email'        => 'nullable|email|max:100',
             'address'      => 'nullable|string',
             'tin_number'   => 'nullable|string|max:50',
+            'vat_number'   => 'nullable|string|max:50',
         ]);
 
         $customer = BiovetTechCustomer::findOrFail($request->auto_id);

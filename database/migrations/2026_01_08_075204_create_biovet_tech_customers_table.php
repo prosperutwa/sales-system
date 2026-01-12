@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('email')->nullable()->unique();
             $table->text('address')->nullable();
             $table->string('tin_number')->nullable();
+            $table->string('vat_number')->nullable();
             $table->timestamps(); // created_at, updated_at
             $table->softDeletes(); // deleted_at
         });

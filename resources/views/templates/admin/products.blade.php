@@ -7,15 +7,18 @@
         <div class="card border-0 shadow-sm rounded">
             <div class="card-header border-top border-primary border-0 bg-white d-flex justify-content-between align-items-center">
                 <h6 class="mb-0">Products</h6>
+                <div class="float-end">
+                    <button class="btn btn-sm btn-success" onclick="exportTableToExcel('tableList', 'products_list')">Export as Excel</button>
+                    <button class="btn btn-sm btn-primary"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#addProductCollapse"
+                    aria-expanded="false"
+                    aria-controls="addProductCollapse">
+                    Add Product
+                </button>
+            </div>
 
-                <button class="btn btn-sm btn-primary-custom"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#addProductCollapse"
-                aria-expanded="false"
-                aria-controls="addProductCollapse">
-                Add Product
-            </button>
         </div>
 
         <div class="card-body">
@@ -65,9 +68,10 @@
                         <tr>
                             <th>#</th>
                             <th>Name</th>
-                            <th>Buying</th>
-                            <th>Selling</th>
+                            <th>Buying(Tsh)</th>
+                            <th>Selling(Tsh)</th>
                             <th>Stock Available</th>
+                            <th>Description</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -76,25 +80,26 @@
                         <tr>
                             <td>{{ $key + 1 }}</td>
                             <td>{{ $product->name }}</td>
-                            <td>Tsh {{ number_format($product->buying_price,2) }}</td>
-                            <td>Tsh {{ number_format($product->selling_price,2) }}</td>
+                            <td>{{ number_format($product->buying_price,2) }}</td>
+                            <td>{{ number_format($product->selling_price,2) }}</td>
                             <td>{{ $product->remain_quantity }}</td>
+                            <td>{{ $product->description ?? '-' }}</td>
                             <td class="text-nowrap float-end">
                                 <a href="javascript:void(0)"
                                 class="btn btn-sm btn-primary"
                                 onclick="openEditModal(
-                                   {{ $product->auto_id }},
-                                   '{{ e($product->name) }}',
-                                   '{{ $product->buying_price }}',
-                                   '{{ $product->selling_price }}',
-                                   '{{ $product->stock_quantinty }}',
-                                   '{{ e($product->description) }}'
-                                   )">
-                                   <i class="fas fa-pen"></i> Edit
-                               </a>
-                               <a href="javascript:void(0)"
-                               class="btn btn-sm btn-success"
-                               onclick="openAddQtyModal(
+                                 {{ $product->auto_id }},
+                                 '{{ e($product->name) }}',
+                                 '{{ $product->buying_price }}',
+                                 '{{ $product->selling_price }}',
+                                 '{{ $product->stock_quantinty }}',
+                                 '{{ e($product->description) }}'
+                                 )">
+                                 <i class="fas fa-pen"></i> Edit
+                             </a>
+                             <a href="javascript:void(0)"
+                             class="btn btn-sm btn-success"
+                             onclick="openAddQtyModal(
                                 {{ $product->auto_id }},
                                 '{{ e($product->name) }}'
                                 )">
@@ -281,5 +286,23 @@
         modal.show();
     }
 </script>
+
+<script>
+    function exportTableToExcel(tableID, filename = ''){
+        let table = document.getElementById(tableID);
+        let clone = table.cloneNode(true);
+
+        let headers = clone.querySelectorAll('thead th:last-child');
+        headers.forEach(th => th.remove());
+        let rows = clone.querySelectorAll('tbody tr');
+        rows.forEach(tr => tr.removeChild(tr.lastElementChild));
+
+        let wb = XLSX.utils.table_to_book(clone, {sheet:"Sheet1"});
+        XLSX.writeFile(wb, filename + ".xlsx");
+    }
+
+</script>
+
+<script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 
 @stop

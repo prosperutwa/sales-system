@@ -7,15 +7,18 @@
         <div class="card border-0 shadow-sm rounded">
             <div class="card-header border-top border-primary border-0 bg-white d-flex justify-content-between align-items-center">
                 <h6 class="mb-0">Customers</h6>
-
-                <button class="btn btn-sm btn-primary-custom"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#addCustomerCollapse"
-                aria-expanded="false"
-                aria-controls="addCustomerCollapse">
-                Add Customer
-            </button>
+                <div class="float-end">
+                    <button class="btn btn-sm btn-success" onclick="exportTableToExcel('tableList', 'customers_list')">Export as Excel</button>
+                    <button class="btn btn-sm btn-primary"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#addCustomerCollapse"
+                    aria-expanded="false"
+                    aria-controls="addCustomerCollapse">
+                    Add Customer
+                </button>
+            </div>
+            
         </div>
 
         <div class="card-body">
@@ -38,14 +41,19 @@
                             <input type="text" name="company_name" class="form-control form-control-sm" placeholder="Optional">
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label class="form-label">Email</label>
                             <input type="email" name="email" class="form-control form-control-sm" placeholder="Optional">
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label class="form-label">TIN Number</label>
                             <input type="text" name="tin_number" class="form-control form-control-sm" placeholder="Optional">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">VAT Number</label>
+                            <input type="text" name="vat_number" class="form-control form-control-sm" placeholder="Optional">
                         </div>
 
                         <div class="col-md-12">
@@ -72,6 +80,8 @@
                             <th>Company</th>
                             <th>Email</th>
                             <th>TIN</th>
+                            <th>VAT</th>
+                            <th>Address</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -84,6 +94,8 @@
                             <td>{{ $customer->company_name ?? 'N/A'}}</td>
                             <td>{{ $customer->email ?? 'N/A' }}</td>
                             <td>{{ $customer->tin_number ?? 'N/A' }}</td>
+                            <td>{{ $customer->vat_number ?? 'N/A' }}</td>
+                            <td>{{ $customer->address ?? 'N/A' }}</td>
                             <td class="text-nowrap">
                                 <button type="button"
                                 class="btn btn-sm btn-primary editCustomerBtn"
@@ -93,7 +105,8 @@
                                 data-company="{{ $customer->company_name }}"
                                 data-email="{{ $customer->email }}"
                                 data-address="{{ $customer->address }}"
-                                data-tin="{{ $customer->tin_number }}">
+                                data-tin="{{ $customer->tin_number }}"
+                                data-vat="{{ $customer->vat_number }}">
                                 <i class="fas fa-pen"></i> Edit
                             </button>
 
@@ -148,14 +161,19 @@
                             <input type="text" name="company_name" id="edit_company_name" class="form-control form-control-sm">
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label class="form-label">Email</label>
                             <input type="email" name="email" id="edit_email" class="form-control form-control-sm">
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label class="form-label">TIN Number</label>
                             <input type="text" name="tin_number" id="edit_tin_number" class="form-control form-control-sm">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">VAT Number</label>
+                            <input type="text" name="vat_number" id="edit_vat_number" class="form-control form-control-sm">
                         </div>
 
                         <div class="col-md-12">
@@ -196,6 +214,7 @@
             document.getElementById('edit_email').value = btn.dataset.email ?? '';
             document.getElementById('edit_address').value = btn.dataset.address ?? '';
             document.getElementById('edit_tin_number').value = btn.dataset.tin ?? '';
+            document.getElementById('edit_vat_number').value = btn.dataset.vat ?? '';
 
             new bootstrap.Modal(
                 document.getElementById('editCustomerModal')
@@ -225,5 +244,23 @@
         });
     }
 </script>
+
+<script>
+    function exportTableToExcel(tableID, filename = ''){
+        let table = document.getElementById(tableID);
+        let clone = table.cloneNode(true);
+
+        let headers = clone.querySelectorAll('thead th:last-child');
+        headers.forEach(th => th.remove());
+        let rows = clone.querySelectorAll('tbody tr');
+        rows.forEach(tr => tr.removeChild(tr.lastElementChild));
+
+        let wb = XLSX.utils.table_to_book(clone, {sheet:"Sheet1"});
+        XLSX.writeFile(wb, filename + ".xlsx");
+    }
+
+</script>
+
+<script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 
 @stop
