@@ -79,48 +79,48 @@ class InvoicesController extends Controller
     }
 
     public function cancel(Request $request, $id)
-{
-    DB::beginTransaction();
+    {
+        DB::beginTransaction();
 
-    try {
+        try {
 
-        $invoice = BiovetTechInvoice::findOrFail($id);
+            $invoice = BiovetTechInvoice::findOrFail($id);
 
-        if ($invoice->status !== 'unpaid') {
-            return redirect()->back()->with('error', 'Only unpaid invoices can be canceled.');
-        }
-
-        $invoiceItems = BiovetTechInvoiceItem::where('invoice_id', $id)->get();
-
-        foreach ($invoiceItems as $item) {
-
-            $product = BiovetTechProduct::find($item->product_id);
-
-            if ($product) {
-                $product->update([
-                    'remain_quantity' => $product->remain_quantity + $item->quantity
-                ]);
+            if ($invoice->status !== 'unpaid') {
+                return redirect()->back()->with('error', 'Only unpaid invoices can be canceled.');
             }
+
+            $invoiceItems = BiovetTechInvoiceItem::where('invoice_id', $id)->get();
+
+            foreach ($invoiceItems as $item) {
+
+                $product = BiovetTechProduct::find($item->product_id);
+
+                if ($product) {
+                    $product->update([
+                        'remain_quantity' => $product->remain_quantity + $item->quantity
+                    ]);
+                }
+            }
+
+            $invoice->update([
+                'status' => 'cancelled',
+            ]);
+
+            DB::commit();
+
+            return redirect()->back()->with(
+                'success',
+                'Invoice #' . str_pad($invoice->auto_id, 4, '0', STR_PAD_LEFT) . ' has been canceled and stock restored.'
+            );
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return redirect()->back()->with('error', 'Failed to cancel invoice. Please try again.');
         }
-
-        $invoice->update([
-            'status' => 'cancelled',
-        ]);
-
-        DB::commit();
-
-        return redirect()->back()->with(
-            'success',
-            'Invoice #' . str_pad($invoice->auto_id, 4, '0', STR_PAD_LEFT) . ' has been canceled and stock restored.'
-        );
-
-    } catch (\Exception $e) {
-
-        DB::rollBack();
-
-        return redirect()->back()->with('error', 'Failed to cancel invoice. Please try again.');
     }
-}
 
     public function pay(Request $request)
     {
@@ -159,38 +159,38 @@ class InvoicesController extends Controller
 
     public function view($invoiceId)
     {
-     $invoice = BiovetTechInvoice::with([
+       $invoice = BiovetTechInvoice::with([
         'customer',
         'items.product',
         'payments'
     ])->findOrFail($invoiceId);
 
-     $company = BiovetTechCompanySetting::first();
+       $company = BiovetTechCompanySetting::first();
 
-     $invoiceNo = '#' . str_pad($invoice->auto_id, 4, '0', STR_PAD_LEFT);
+       $invoiceNo = 'https://biovet-tech.co.tz/view-invoice/' . str_pad($invoice->auto_id, 4, '0', STR_PAD_LEFT);
 
        $qrCode = QrCode::size(180)
-    ->margin(2)
-    ->errorCorrection('H')
-    ->generate($invoiceNo);
+       ->margin(2)
+       ->errorCorrection('H')
+       ->generate($invoiceNo);
 
 
-     return view('templates.admin.view-invoice', compact(
+       return view('templates.admin.view-invoice', compact(
         'invoice',
         'company',
         'qrCode',
         'invoiceNo'
     ));
- }
+   }
 
- public function print($invoiceId)
- {
+   public function print($invoiceId)
+   {
     $invoice = BiovetTechInvoice::with(['customer', 'items.product', 'payments'])->findOrFail($invoiceId);
     $company = BiovetTechCompanySetting::first();
 
-    $invoiceNo = '#' . str_pad($invoice->auto_id, 4, '0', STR_PAD_LEFT);
+    $invoiceNo = 'https://biovet-tech.co.tz/view-invoice/' . str_pad($invoice->auto_id, 4, '0', STR_PAD_LEFT);
 
-       $qrCode = QrCode::size(180)
+    $qrCode = QrCode::size(180)
     ->margin(2)
     ->errorCorrection('H')
     ->generate($invoiceNo);
@@ -205,9 +205,9 @@ public function download($invoiceId)
     $invoice = BiovetTechInvoice::with(['customer', 'items.product', 'payments'])->findOrFail($invoiceId);
     $company = BiovetTechCompanySetting::first();
 
-    $invoiceNo = '#' . str_pad($invoice->auto_id, 4, '0', STR_PAD_LEFT);
+    $invoiceNo = 'https://biovet-tech.co.tz/view-invoice/' . str_pad($invoice->auto_id, 4, '0', STR_PAD_LEFT);
 
-       $qrCode = QrCode::size(180)
+    $qrCode = QrCode::size(180)
     ->margin(2)
     ->errorCorrection('H')
     ->generate($invoiceNo);
@@ -215,6 +215,30 @@ public function download($invoiceId)
     $action = "download";
 
     return view('templates.admin.invoices.print', compact('invoice', 'company','qrCode', 'action'));
+}
+
+public function viewInvoice($invoiceId){
+
+    $invoiceId = ltrim($invoiceId, '0');
+
+
+    $invoice = BiovetTechInvoice::with(['customer', 'items.product', 'payments'])->find($invoiceId);
+
+    if (!$invoice) {
+        return redirect()->route('login.page')->with('error', 'Invoice not found');
+    }
+    
+    $company = BiovetTechCompanySetting::first();
+
+    $invoiceNo = 'https://biovet-tech.co.tz/view-invoice/' . str_pad($invoice->auto_id, 4, '0', STR_PAD_LEFT);
+
+    $qrCode = QrCode::size(180)
+    ->margin(2)
+    ->errorCorrection('H')
+    ->generate($invoiceNo);
+
+
+    return view('templates.admin.invoices.public-view-invoice', compact('invoice', 'company','qrCode'));    
 }
 
 }

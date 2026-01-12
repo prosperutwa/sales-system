@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\LoginController;
 Route::get('/', [App\Http\Controllers\Auth\LoginController::class, 'loginPage'])->name('login.page');
 Route::post('/login-auth', [App\Http\Controllers\Auth\LoginController::class, 'loginAuth'])->name('login.auth');
 Route::get('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
+Route::get('/view-invoice/{id}',[App\Http\Controllers\Admin\InvoicesController::class, 'viewInvoice'])->name('view.invoice');
 
 
 Route::middleware([AuthBiovetUser::class])->group(function () {
