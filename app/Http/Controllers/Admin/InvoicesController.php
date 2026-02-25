@@ -169,7 +169,7 @@ class InvoicesController extends Controller
 
        $invoiceNo = 'https://biovet-tech.co.tz/view-invoice/' . str_pad($invoice->auto_id, 4, '0', STR_PAD_LEFT);
 
-       $qrCode = QrCode::size(180)
+       $qrCode = QrCode::size(100)
        ->margin(2)
        ->errorCorrection('H')
        ->generate($invoiceNo);
@@ -190,7 +190,7 @@ class InvoicesController extends Controller
 
     $invoiceNo = 'https://biovet-tech.co.tz/view-invoice/' . str_pad($invoice->auto_id, 4, '0', STR_PAD_LEFT);
 
-    $qrCode = QrCode::size(180)
+    $qrCode = QrCode::size(100)
     ->margin(2)
     ->errorCorrection('H')
     ->generate($invoiceNo);
@@ -207,7 +207,7 @@ public function download($invoiceId)
 
     $invoiceNo = 'https://biovet-tech.co.tz/view-invoice/' . str_pad($invoice->auto_id, 4, '0', STR_PAD_LEFT);
 
-    $qrCode = QrCode::size(180)
+    $qrCode = QrCode::size(100)
     ->margin(2)
     ->errorCorrection('H')
     ->generate($invoiceNo);
@@ -232,7 +232,7 @@ public function viewInvoice($invoiceId){
 
     $invoiceNo = 'https://biovet-tech.co.tz/view-invoice/' . str_pad($invoice->auto_id, 4, '0', STR_PAD_LEFT);
 
-    $qrCode = QrCode::size(180)
+    $qrCode = QrCode::size(100)
     ->margin(2)
     ->errorCorrection('H')
     ->generate($invoiceNo);

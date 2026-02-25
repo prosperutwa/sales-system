@@ -68,19 +68,19 @@
     .status.unpaid { background: #6c757d; }
     .status.cancelled { background: #dc3545; }
 
-    table {
+    .content-invoice table {
         width: 100%;
         border-collapse: collapse;
         margin-bottom: 20px;
     }
 
-    table th,
-    table td {
+    .content-invoice table th,
+    .content-invoice table td {
         border: 1px solid #ddd;
-        padding: 8px;
+        padding: 4px;
     }
 
-    table th {
+    .content-invoice table th {
         background: #f2f2f2;
         text-align: left;
     }
@@ -133,39 +133,103 @@
 <div class="invoice-container">
 
     <div class="header-image">
-        <img src="{{ asset('assets/img/header/header.png') }}">
+        <table width="100%" style="text-align:center; border-bottom: 2px solid black;">
+            <tr>
+                <td style="width: 20%;">
+                    <center><img src="{{ asset('assets/img/logo/logo_biovet.png') }}" width="30%"></center>
+                </td>
+                <td style="width:60%">
+                    <h2 style="text-transform: uppercase;">{{ $company->company_name ?? 'BIOVET TECHNOLOGY LIMITED' }}</h2>
+                    <h6>{{ $company->company_address ?? '' }}</h6>
+                    <h6>Phone: {{ $company->company_phone ?? '' }} | Email: {{ $company->company_email ?? '' }}</h6>
+                </td>
+                <td style="width:20%">
+                    <center><img src="{{ asset('assets/img/logo/logo_biovet.png') }}" width="30%"></center>
+                </td>
+            </tr>
+        </table>
     </div>
 
-    <div class="invoice-header">
-        <div class="company-info">
-            <h4>{{ $company->company_name ?? 'Company Name' }}</h4>
-            <p>{{ $company->company_address ?? '' }}</p>
-            <p>Phone: {{ $company->company_phone ?? '' }}</p>
-            <p>Email: {{ $company->company_email ?? '' }}</p>
-        </div>
+    <div class="invoice-header" style="margin-top: 10px;">
+        <table width="100%">
+            <tr>
+                <td style="width:40%">
+                    <h5 style="text-transform: capitalize;">{{ $company->company_name ?? 'Company Name' }}</h5>
+                    <p>
+                        <b>Address</b>{{ $company->company_address ?? '' }} <br>
+                        <b>TIN:</b> 187-710-855<br>
+                        <b>VRN:</b> N/R<br>
+                        <b>Phone:</b>{{ $company->company_phone ?? '' }} <br>
+                        <b>Email:</b>{{ $company->company_email ?? '' }}
+                    </p>
+                </td>
+                <td style="width:20%">
+                 <div class="qr-code">
+                     {!! $qrCode !!}
+                 </div>   
+             </td>
+             <td style="width:40%">
 
-        <div class="customer-info">
-            <p><strong>Invoice To</strong></p>
-            <p>{{ $invoice->customer->full_name ?? '-' }}</p>
-            <p>{{ $invoice->customer->company_name ?? '' }}</p>
-            <p>Phone: {{ $invoice->customer->phone ?? '-' }}</p>
-            <p>Email: {{ $invoice->customer->email ?? '-' }}</p>
-            <p>Tin Number: {{ $invoice->customer->tin_number ?? '-' }}</p>
-            <p>Vat Number: {{ $invoice->customer->vat_number ?? '-' }}</p>
-            <p><strong>Date:</strong> {{ $invoice->created_at->format('d M Y') }}</p>
+                <div style="display: flex; justify-content: left;">
+                    <table width="100%" style="margin-left: auto; margin-right: 0;">
+                        <tr>
+                            <td colspan="2"><h6 style="font-weight: bold;">Invoice To:</h6></td>
+                        </tr>
+                        <tr>
+                            <td><b>Contact Person:</b></td>
+                            <td>{{ $invoice->customer->full_name ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Company Name:</b></td>
+                            <td>{{ $invoice->customer->company_name ?? '' }}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Phone:</b></td>
+                            <td>{{ $invoice->customer->phone ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Email:</b></td>
+                            <td>{{ $invoice->customer->email ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Tin Number:</b></td>
+                            <td>{{ $invoice->customer->tin_number ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Vat Number</b></td>
+                            <td>{{ $invoice->customer->vat_number ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Date:</b></td>
+                            <td>{{ $invoice->created_at->format('d M Y') }}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Status:</b></td>
+                            <td>
+                                @php
+                                $statusClass = match($invoice->status) {
+                                    'unpaid'   => 'badge bg-secondary',
+                                    'paid'     => 'badge bg-success',
+                                    'cancelled' => 'badge bg-danger',
+                                    default    => 'badge bg-light',
+                                };
+                                @endphp
+                                <span class="{{ $statusClass }}">{{ ucfirst($invoice->status) }}</span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
 
-            <span class="status {{ $invoice->status }}">
-                {{ ucfirst($invoice->status) }}
-            </span>
-        </div>
+<div class="invoice-meta">
+    <div class="invoice-title">
+        Invoice #{{ str_pad($invoice->auto_id, 4, '0', STR_PAD_LEFT) }}
     </div>
-
-    <div class="invoice-meta">
-        <div class="invoice-title">
-            Invoice #{{ str_pad($invoice->auto_id, 4, '0', STR_PAD_LEFT) }}
-        </div>
-    </div>
-
+</div>
+<div class="content-invoice">
     <table>
         <thead>
             <tr>
@@ -179,70 +243,93 @@
         <tbody>
             @php $total = 0; @endphp
             @foreach($invoice->items as $key => $item)
-                @php
-                    $subtotal = $item->quantity * $item->product->selling_price;
-                    $total += $subtotal;
-                @endphp
-                <tr>
-                    <td>{{ $key + 1 }}</td>
-                    <td>{{ $item->product->name ?? '-' }}</td>
-                    <td class="text-right">{{ number_format($item->product->selling_price, 2) }}</td>
-                    <td class="text-right">{{ $item->quantity }}</td>
-                    <td class="text-right">{{ number_format($subtotal, 2) }}</td>
-                </tr>
+            @php
+            $subtotal = $item->quantity * $item->product->selling_price;
+            $total += $subtotal;
+            @endphp
+            <tr>
+                <td>{{ $key + 1 }}</td>
+                <td>{{ $item->product->name ?? '-' }}</td>
+                <td class="text-right">{{ number_format($item->product->selling_price, 2) }}</td>
+                <td class="text-right">{{ $item->quantity }}</td>
+                <td class="text-right">{{ number_format($subtotal, 2) }}</td>
+            </tr>
             @endforeach
         </tbody>
     </table>
+</div>
+<table class="totals-table">
+    <tr>
+        <td>Total</td>
+        <td class="text-right">Tsh {{ number_format($total, 2) }}</td>
+    </tr>
+    <tr>
+        <td>Discount</td>
+        <td class="text-right">Tsh {{ number_format($invoice->discount_amount, 2) }}</td>
+    </tr>
+    <tr>
+        <td>Amount Due</td>
+        <td class="text-right">Tsh {{ number_format($invoice->total_amount, 2) }}</td>
+    </tr>
+</table>
 
-    <table class="totals-table">
-        <tr>
-            <td>Total</td>
-            <td class="text-right">Tsh {{ number_format($total, 2) }}</td>
-        </tr>
-        <tr>
-            <td>Discount</td>
-            <td class="text-right">Tsh {{ number_format($invoice->discount_amount, 2) }}</td>
-        </tr>
-        <tr>
-            <td>Amount Due</td>
-            <td class="text-right">Tsh {{ number_format($invoice->total_amount, 2) }}</td>
-        </tr>
-    </table>
-
+<div class="content-invoice">
     @if($invoice->status === 'paid')
-        <h4>Payments</h4>
-        <table>
-            <thead>
+    <span style="font-weight: bold;">Payments</span>
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Method</th>
+                <th>Reference</th>
+                <th>Amount (Tsh)</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($invoice->payments as $key => $payment)
+            <tr>
+                <td>{{ $key + 1 }}</td>
+                <td>{{ ucfirst($payment->payment_method) }}</td>
+                <td>{{ $payment->reference_number ?? '-' }}</td>
+                <td class="text-right">{{ number_format($payment->amount_paid, 2) }}</td>
+                <td>{{ $payment->created_at->format('d M Y H:i') }}</td>
+            </tr>
+            @empty
+            <tr>
+                <td colspan="5" style="text-align:center;">No payments found</td>
+            </tr>
+            @endforelse
+        </tbody>
+    </table>
+    @endif
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <table class="table table-bordered">
+            <thead class="table-light">
                 <tr>
-                    <th>#</th>
-                    <th>Method</th>
-                    <th>Reference</th>
-                    <th>Amount (Tsh)</th>
-                    <th>Date</th>
+                    <th colspan="2" style="text-align:center;">Payment Details</th>
                 </tr>
             </thead>
             <tbody>
-                @forelse($invoice->payments as $key => $payment)
-                    <tr>
-                        <td>{{ $key + 1 }}</td>
-                        <td>{{ ucfirst($payment->payment_method) }}</td>
-                        <td>{{ $payment->reference_number ?? '-' }}</td>
-                        <td class="text-right">{{ number_format($payment->amount_paid, 2) }}</td>
-                        <td>{{ $payment->created_at->format('d M Y H:i') }}</td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="5" style="text-align:center;">No payments found</td>
-                    </tr>
-                @endforelse
+                <tr>
+                    <td><b>Account Name: </b></td>
+                    <td>BIOVET TECHNOLOGY LIMITED</td>
+                </tr>
+                <tr>
+                    <td><b>NMB Bank: (TZS)</b></td>
+                    <td>AC 23510094380</td>
+                </tr>
+                <tr>
+                    <td><b>Lipa Number: Vodacom</b></td>
+                    <td>350298588</td>
+                </tr>
             </tbody>
         </table>
-    @endif
-
-    <div class="qr-section">
-        {!! $qrCode !!}
     </div>
-
+</div>
 </div>
 
 
@@ -250,35 +337,35 @@
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
 <script>
-async function generatePDF() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF('p', 'mm', 'a4');
-    
-    const element = document.querySelector('.invoice-container');
-    
-    const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        backgroundColor: '#ffffff'
-    });
-    
-    const imgData = canvas.toDataURL('image/jpeg', 1.0);
-    
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-    
-    const imgWidth = pageWidth - 20; 
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-    
-    doc.addImage(imgData, 'JPEG', 10, 10, imgWidth, imgHeight);
-    
-    doc.save(`invoice_{{ str_pad($invoice->auto_id, 4, '0', STR_PAD_LEFT) }}.pdf`);
+    async function generatePDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('p', 'mm', 'a4');
 
-    setTimeout(()=>{
-        window.history.back();
-    }, 100);
-}
+        const element = document.querySelector('.invoice-container');
+
+        const canvas = await html2canvas(element, {
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            backgroundColor: '#ffffff'
+        });
+
+        const imgData = canvas.toDataURL('image/jpeg', 1.0);
+
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+
+        const imgWidth = pageWidth - 20; 
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        doc.addImage(imgData, 'JPEG', 10, 10, imgWidth, imgHeight);
+
+        doc.save(`invoice_{{ str_pad($invoice->auto_id, 4, '0', STR_PAD_LEFT) }}.pdf`);
+
+        setTimeout(()=>{
+            window.history.back();
+        }, 100);
+    }
 </script>
 
 
