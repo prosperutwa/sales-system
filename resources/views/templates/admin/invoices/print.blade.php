@@ -156,11 +156,11 @@
                 <td style="width:40%">
                     <h5 style="text-transform: capitalize;">{{ $company->company_name ?? 'Company Name' }}</h5>
                     <p>
-                        <b>Address</b>{{ $company->company_address ?? '' }} <br>
+                        <b>Address:</b> {{ $company->company_address ?? '' }} <br>
                         <b>TIN:</b> 187-710-855<br>
                         <b>VRN:</b> N/R<br>
-                        <b>Phone:</b>{{ $company->company_phone ?? '' }} <br>
-                        <b>Email:</b>{{ $company->company_email ?? '' }}
+                        <b>Phone:</b> {{ $company->company_phone ?? '' }} <br>
+                        <b>Email:</b> {{ $company->company_email ?? '' }}
                     </p>
                 </td>
                 <td style="width:20%">
