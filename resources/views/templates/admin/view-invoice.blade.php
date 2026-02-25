@@ -32,6 +32,13 @@
                 <div class="col-md-12" style="margin-top: 10px;">
                     <table width="100%">
                         <tr>
+                            <td colspan="3">
+                                <center>
+                                    <h5>TAX INVOICE</h5>
+                                </center>
+                            </td>
+                        </tr>
+                        <tr>
                             <td style="width:40%">
                                 <h5 style="text-transform: capitalize;">{{ $company->company_name ?? 'Company Name' }}</h5>
                                 <p>
